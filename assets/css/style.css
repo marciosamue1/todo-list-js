@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100dvh;
+    width: 100dvw;
+}
+
+#container {
+    height: 100%;
+    width: 100%;
+}
+
+#lista-tarefas{
+    list-style: none;
+}
+
+.element {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1.5em;
+    color: white;
+}
+
+.error {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 20px;
+    border-radius: 20px;
+    background-color: red;
+
+}
+
+.remover {
+    margin-left: 20px;
+    border: 1px solid black;
+    color: black;
+}
