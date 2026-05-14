@@ -43,6 +43,18 @@ O que você vai praticar:
 Dia: 12/05/26
 */
 
+//Fase 4
+/*
+    **** Guardar as informações.
+
+O que você vai praticar:
+
+    1. localStorage
+    2. JSON.stringify
+    3. JSON.parse
+    4. filtros com filter()
+*/
+
 
 const inputTarefa = document.querySelector('#display');
 const form = document.querySelector('#submit');
