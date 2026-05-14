@@ -47,7 +47,7 @@ Dia: 12/05/26
 const inputTarefa = document.querySelector('#display');
 const form = document.querySelector('#submit');
 const listaTarefas = document.querySelector('#lista-tarefas');
-const tarefas = [];
+let tarefas = [];
 
 
 
@@ -55,14 +55,14 @@ const tarefas = [];
 //// Erros e limpezas de input
 
 function validarInput() {
-    if (inputTarefa.value.trim() === '') {   
+    if (inputTarefa.value.trim() === '') {
         if (!document.querySelector('.error')) {
             const li = document.createElement('li');
             li.classList.add('error');
             li.innerText = `adicione algo valido!`;
-            listaTarefas.appendChild(li); 
+            listaTarefas.appendChild(li);
         }
-        
+
         return false
     } else {
         return;
@@ -87,23 +87,41 @@ function addArray() {
 }
 
 
+//// Add tarefas ao localStorage
+
+
+function guardaInfo() {
+    const info = JSON.stringify(tarefas);
+    localStorage.setItem('tarefas', info);
+}
+
+function devolveInfo() {
+    const guardaTarefa = localStorage.getItem('tarefas');
+    const listaDeTarefas = JSON.parse(guardaTarefa);
+    tarefas.push(...listaDeTarefas);
+
+    for (let tarefa of listaDeTarefas) {
+        adicionarTarefa(tarefa.nome)
+    }
+}
+
+
 
 
 
 //// Add tarefas e remove
 
-function adicionarTarefa() {
+function adicionarTarefa(nome) {
     const li = document.createElement('li');
     const remove = document.createElement('button');
-    li.textContent += tarefas[tarefas.length - 1].nome;
+    li.textContent = nome;
     remove.innerHTML = 'Remove';
     remove.classList.add('remover');
     remove.classList.add('btn');
-    
+
     li.appendChild(remove);
     listaTarefas.appendChild(li);
     li.classList.add('element');
-
 
     return li;
 }
@@ -111,9 +129,18 @@ function adicionarTarefa() {
 function removeTarefa() {
     listaTarefas.addEventListener('click', e => {
         const btn = e.target
-        
+
         if (btn.classList.contains('remover')) {
-            btn.parentElement.remove();
+           const li = btn.parentElement;
+           const valorDaTarefaRemovida = li.firstChild.textContent;
+           const armazenaRemovido = tarefas.filter(tarefa => {
+                return tarefa.nome !== valorDaTarefaRemovida;
+           });
+
+           tarefas = armazenaRemovido;
+
+           btn.parentElement.remove();
+            guardaInfo();
         }
     });
 }
@@ -121,22 +148,27 @@ function removeTarefa() {
 
 
 //// Eventos
-
 form.addEventListener('submit', function (event) {
     event.preventDefault();
-    
-    
-    
+
+
+
     if (validarInput() !== false) {
         addArray();
-        adicionarTarefa();
+        guardaInfo();
+        adicionarTarefa(inputTarefa.value);
         limpaInput();
-        
-        if(document.querySelector('.error')) {
+
+
+        if (document.querySelector('.error')) {
             const error = document.querySelector('.error');
             error.remove();
         }
     }
+
 });
 
+
+
 removeTarefa();
+devolveInfo();
