@@ -59,6 +59,9 @@ O que você vai praticar:
 const inputTarefa = document.querySelector('#display');
 const form = document.querySelector('#submit');
 const listaTarefas = document.querySelector('#lista-tarefas');
+const todos = document.querySelector('#filtro-todos');
+const pendentes = document.querySelector('#filtro-pendentes');
+const concluidos = document.querySelector('#filtro-concluidas');
 let tarefas = [];
 
 
@@ -94,7 +97,8 @@ function limpaInput() {
 
 function addArray() {
     tarefas.push({
-        nome: inputTarefa.value
+        nome: inputTarefa.value,
+        estado: false
     });
 }
 
@@ -113,7 +117,7 @@ function devolveInfo() {
     tarefas.push(...listaDeTarefas);
 
     for (let tarefa of listaDeTarefas) {
-        adicionarTarefa(tarefa.nome)
+        adicionarTarefa(tarefa.nome, tarefa.estado);
     }
 }
 
@@ -123,14 +127,30 @@ function devolveInfo() {
 
 //// Add tarefas e remove
 
-function adicionarTarefa(nome) {
+function adicionarTarefa(nome, estado) {
+    const check = document.createElement('input');
+    const texto = document.createElement('span');
     const li = document.createElement('li');
     const remove = document.createElement('button');
-    li.textContent = nome;
+
+    check.type = 'checkbox';
+    check.classList.add('check');
+
+    if (estado) {
+        check.checked = true;
+        li.classList.add('marcado');
+
+    }
+
+    texto.innerHTML = nome;
+
+
     remove.innerHTML = 'Remove';
     remove.classList.add('remover');
     remove.classList.add('btn');
 
+    li.appendChild(check);
+    li.appendChild(texto)
     li.appendChild(remove);
     listaTarefas.appendChild(li);
     li.classList.add('element');
@@ -143,19 +163,88 @@ function removeTarefa() {
         const btn = e.target
 
         if (btn.classList.contains('remover')) {
-           const li = btn.parentElement;
-           const valorDaTarefaRemovida = li.firstChild.textContent;
-           const armazenaRemovido = tarefas.filter(tarefa => {
+            const li = btn.parentElement;
+            const valorDaTarefaRemovida = li.querySelector('span').textContent;
+            const armazenaRemovido = tarefas.filter(tarefa => {
                 return tarefa.nome !== valorDaTarefaRemovida;
-           });
+            });
 
-           tarefas = armazenaRemovido;
+            tarefas = armazenaRemovido;
 
-           btn.parentElement.remove();
+            btn.parentElement.remove();
             guardaInfo();
         }
     });
 }
+
+function marcadoComoConcluido() {
+    listaTarefas.addEventListener('change', e => {
+        const ev = e.target;
+
+        if (ev.classList.contains('check')) {
+            const pai = ev.parentElement;
+
+            pai.classList.toggle('marcado');
+            const marcado = pai.querySelector('span').textContent;
+
+            tarefas.forEach(element => {
+                if (element.nome === marcado) {
+                    element.estado = pai.classList.contains('marcado');
+                    guardaInfo();
+                }
+
+            });
+        }
+    });
+
+
+}
+
+
+
+
+
+//// Add para a área de concluído e pendente
+todos.addEventListener('click', e => {
+    listaTarefas.innerHTML = '';
+    tarefas.forEach(element => {
+        adicionarTarefa(element.nome, element.estado)
+    });
+});
+
+
+
+
+pendentes.addEventListener('click', e => {
+    const tarefasPendentes = tarefas.filter(tarefa => {
+        return tarefa.estado === false;
+
+    });
+
+    listaTarefas.innerHTML = '';
+    tarefasPendentes.forEach(element => {
+        adicionarTarefa(element.nome, element.estado)
+    });
+});
+
+
+
+
+concluidos.addEventListener('click', e => {
+    const tarefasConcluidas = tarefas.filter(tarefa => {
+        return tarefa.estado === true;
+
+    });
+
+    listaTarefas.innerHTML = '';
+    tarefasConcluidas.forEach(element => {
+        adicionarTarefa(element.nome, element.estado)
+    });
+});
+
+
+
+
 
 
 
@@ -168,7 +257,7 @@ form.addEventListener('submit', function (event) {
     if (validarInput() !== false) {
         addArray();
         guardaInfo();
-        adicionarTarefa(inputTarefa.value);
+        adicionarTarefa(inputTarefa.value, tarefas[tarefas.length - 1].estado);
         limpaInput();
 
 
@@ -180,7 +269,6 @@ form.addEventListener('submit', function (event) {
 
 });
 
-
-
+marcadoComoConcluido()
 removeTarefa();
 devolveInfo();
